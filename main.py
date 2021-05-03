@@ -7,16 +7,17 @@ from fast_api_postgresql import crud, models, schemas
 from fast_api_postgresql.database import engine, SessionLocal
 
 models.Base.metadata.create_all(bind=engine)
-
 app = FastAPI()
 
 
 # Dependency
 def get_db():
     db = SessionLocal()
+    print("=======session id", db, "hi")
     try:
         yield db
     finally:
+        print("=======session id", db, "bye")
         db.close()
 
 
@@ -44,7 +45,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 @app.post("/users/{user_id}/items/", response_model=schemas.Item)
 def create_item_for_user(
-    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
+        user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
 ):
     return crud.create_user_item(db=db, item=item, user_id=user_id)
 
